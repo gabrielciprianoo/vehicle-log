@@ -10,40 +10,71 @@
         </div>
     @endif
 
-    <div class="flex mt-4 flex-wrap gap-4 mb-6">
+    <div class="flex mt-4 flex-wrap w-[90%] items-center gap-4 mb-6">
 
         <!-- Filtros de Checkboxes -->
         <form method="GET" action="{{ route('home') }}" class="flex items-center gap-6 bg-white p-4 rounded shadow">
             <label class="flex items-center space-x-2 text-gray-700">
-                <input type="checkbox" name="recent" value="1" onchange="this.form.submit()" {{ request('recent') ? 'checked' : '' }} class="form-checkbox text-blue-600">
+                <input type="checkbox" name="recent" value="1" onchange="this.form.submit()"
+                    {{ request('recent') ? 'checked' : '' }} class="form-checkbox text-blue-600">
                 <span>Últimos 7 días</span>
             </label>
-    
+
             <label class="flex items-center space-x-2 text-gray-700">
-                <input type="checkbox" name="current_month" value="1" onchange="this.form.submit()" {{ request('current_month') ? 'checked' : '' }} class="form-checkbox text-blue-600">
+                <input type="checkbox" name="current_month" value="1" onchange="this.form.submit()"
+                    {{ request('current_month') ? 'checked' : '' }} class="form-checkbox text-blue-600">
                 <span>Mes actual</span>
             </label>
         </form>
-    
-        <!-- Filtro por Mes -->
-        <form method="GET" action="{{ route('home') }}" class="flex items-center gap-4 bg-white p-4 rounded shadow">
-            <label for="month" class="flex items-center space-x-2 text-gray-700">
-                <select name="month" id="month" onchange="this.form.submit()" class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md p-2">
-                    <option value="">Todos los registros</option>
+
+        <!-- Filtro por Año y Mes -->
+        <form method="GET" action="{{ route('home') }}" class="flex flex-col lg:flex-row justify-between items-center  gap-4 bg-white p-4 rounded shadow">
+            <label class="flex items-center  space-x-2 text-gray-700">
+                <select name="year" id="year" onchange="this.form.submit()"
+                    class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md p-2">
+                    <option value="">Todos los años</option>
+                    @for ($y = now()->year; $y >= 2020; $y--)
+                        {{-- Puedes ajustar el rango de años aquí --}}
+                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>
+                            {{ $y }}
+                        </option>
+                    @endfor
+                </select>
+                <span>Año</span>
+            </label>
+
+            <label class="flex  items-center space-x-2 text-gray-700">
+                <select name="month" id="month" onchange="this.form.submit()"
+                    class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md p-2">
+                    <option value="">Todos los meses</option>
                     @for ($m = 1; $m <= 12; $m++)
                         <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>
                             {{ \Carbon\Carbon::create()->month($m)->locale('es')->translatedFormat('F') }}
                         </option>
                     @endfor
                 </select>
-                <span>Filtrar por mes</span>
+                <span>Mes</span>
             </label>
         </form>
-    
+
+        <!-- Filtro por número de orden de servicio -->
+        <form method="GET" action="{{ route('home') }}" class="inline-flex w-full md:w-auto items-center">
+            <input type="text" name="order_number" id="order_number" value="{{ request('order_number') }}" placeholder="Buscar por Orden de Servicio" class="border rounded w-full p-2">
+            <button type="submit" class="ml-2 p-2 bg-blue-500 text-white rounded">Buscar</button>
+        </form>
+        
+
+        <form method="GET" action="{{ route('home') }}" class="inline-block">
+            <button type="submit" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-700">
+                Quitar filtros
+            </button>
+        </form>
+
     </div>
-    
-    
-    
+
+
+
+
 
     <div class="flex justify-left mt-10">
         <a href="{{ route('vehicles.create') }}"

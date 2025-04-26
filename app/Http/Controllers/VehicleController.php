@@ -9,27 +9,45 @@ class VehicleController extends Controller
 {
     public function index(Request $request)
     {
+        $vehicles = Vehicle::query();
+
+        // Filtro: últimos 7 días
         if ($request->has('recent') && $request->recent) {
-            // Filtro: últimos 7 días
-            $vehicles = Vehicle::where('date', '>=', now()->subDays(7)->toDateString())
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } elseif ($request->has('current_month') && $request->current_month) {
-            // Filtro: mes actual
-            $vehicles = Vehicle::whereYear('date', now()->year)
-                ->whereMonth('date', now()->month)
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } elseif ($request->has('month') && $request->month) {
-            // Filtro: mes seleccionado
-            $vehicles = Vehicle::whereYear('date', now()->year)
-                ->whereMonth('date', $request->month)
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } else {
-            // Sin filtros
-            $vehicles = Vehicle::orderBy('created_at', 'desc')->get();
+            $vehicles->where('date', '>=', now()->subDays(7)->toDateString());
         }
+
+        // Filtro: mes actual
+        elseif ($request->has('current_month') && $request->current_month) {
+            $vehicles->whereYear('date', now()->year)
+                ->whereMonth('date', now()->month);
+        }
+
+        // Filtro: año y mes seleccionados
+        elseif (($request->has('month') && $request->month) || ($request->has('year') && $request->year)) {
+            if ($request->year) {
+                $vehicles->whereYear('date', $request->year);
+            } else {
+                $vehicles->whereYear('date', now()->year); // Default al año actual si no eligen
+            }
+
+            if ($request->month) {
+                $vehicles->whereMonth('date', $request->month);
+            }
+        }
+
+        // Filtro: búsqueda por número de orden de servicio
+        if ($request->has('order_number') && $request->order_number) {
+            $vehicles->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        // Sin filtros: muestra todo
+        if (!$request->has('recent') && !$request->has('current_month') && !$request->has('month') && !$request->has('year') && !$request->has('order_number')) {
+            $vehicles->orderBy('created_at', 'desc')->limit(20);
+        } else {
+            $vehicles->orderBy('created_at', 'desc');
+        }
+
+        $vehicles = $vehicles->get();
 
         return view('welcome', compact('vehicles'));
     }
