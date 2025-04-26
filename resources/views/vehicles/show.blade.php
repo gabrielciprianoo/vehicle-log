@@ -9,11 +9,14 @@
 </div>
 <div class="max-w-2xl mx-auto p-8 mt-10 bg-white rounded-2xl shadow-xl space-y-6">
 
-    <!-- Nombre del vehículo y fecha -->
     <div class="flex justify-between items-center p-4">
         <h1 class="text-2xl font-bold text-gray-800 capitalize">{{ $vehicle->vehicle }}</h1>
-        <span class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($vehicle->date)->format('j/M/Y') }}</span>
+        <span class="text-sm text-gray-500">
+            {{ \Carbon\Carbon::parse($vehicle->date)->locale('es')->isoFormat('D MMMM YYYY') }}
+        </span>
     </div>
+    
+    
 
     <!-- Información general -->
     <div class="space-y-1">
