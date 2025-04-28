@@ -13,6 +13,7 @@ class Vehicle extends Model
         'plates',
         'service_type',
         'order_number',
+        'vin',  // <--- Nuevo campo VIN
         'yellow_sheet',
         'blue_sheet',
         'history',
@@ -21,5 +22,13 @@ class Vehicle extends Model
         'km',
         'key',
         'observations',
+        'observations',
+        'diagnostic',  // <--- Nuevos campos 
+        'dismantling',
+        'disassembly',
+        'assembly',
+        'mounting',
+        'testing',
+        'delivered',
     ];
 }

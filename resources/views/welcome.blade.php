@@ -59,7 +59,7 @@
 
         <!-- Filtro por número de orden de servicio -->
         <form method="GET" action="{{ route('home') }}" class="inline-flex w-full md:w-auto items-center">
-            <input type="text" name="order_number" id="order_number" value="{{ request('order_number') }}" placeholder="Buscar por Orden de Servicio" class="border rounded w-full p-2">
+            <input type="text" name="order_number" id="order_number" value="{{ request('order_number') }}" placeholder="VIN / # Orden" class="border rounded w-full p-2">
             <button type="submit" class="ml-2 p-2 bg-blue-500 text-white rounded">Buscar</button>
         </form>
         
@@ -129,6 +129,7 @@
                         {{ \Carbon\Carbon::parse($vehicle->date)->format('d-m-Y') }}</p>
                     <p class="text-sm text-gray-700"><strong>Placas:</strong> {{ $vehicle->plates }}</p>
                     <p class="text-sm text-gray-700"><strong>Número de orden:</strong> {{ $vehicle->order_number }}</p>
+                    <p class="text-sm text-gray-700"><strong>VIN:</strong> {{ $vehicle->vin }}</p>
                     <p class="text-sm text-gray-700"><strong>Servicio:</strong> {{ $vehicle->service_type }}</p>
                 </div>
 

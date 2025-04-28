@@ -17,7 +17,7 @@
     </div>
     
     
-
+    <p class="text-center font-bold my-4">Información general</p>
     <!-- Información general -->
     <div class="space-y-1">
 
@@ -40,8 +40,13 @@
             <p class="text-gray-500 text-sm">Número de Orden</p>
             <p class="text-gray-700 text-sm font-semibold">{{ $vehicle->order_number }}</p>
         </div>
+        <div class="p-4 flex gap-2 bg-gray-50 rounded-lg shadow-sm">
+            <p class="text-gray-500 text-sm">VIN</p>
+            <p class="text-gray-700 text-sm font-semibold">{{ $vehicle->vin }}</p>
+        </div>
 
         <!-- Documentos (verde o amarillo según valor) -->
+        <p class="text-center font-bold my-4">Documentos / Estado</p>
         <div class="grid md:grid-cols-2 gap-4">
 
             <div class="p-4 flex gap-2 rounded-lg shadow-sm {{ $vehicle->yellow_sheet ? 'bg-green-100' : 'bg-yellow-100' }}">
@@ -80,6 +85,31 @@
             </div>
 
         </div>
+
+<!-- Áreas por las que ha pasado -->
+<p class="text-center font-bold my-4">Áreas por las que ha pasado</p>
+<div class="grid md:grid-cols-2 gap-4 mt-8">
+    @php
+        $areas = [
+            'diagnostic' => 'Diagnóstico',
+            'dismantling' => 'Desmontaje',
+            'disassembly' => 'Desarmado',
+            'assembly' => 'Armado',
+            'mounting' => 'Montaje',
+            'testing' => 'Pruebas',
+            'delivered' => 'Entregado',
+        ];
+    @endphp
+
+    @foreach ($areas as $area => $label)
+        <div class="p-4 flex gap-2 rounded-lg shadow-sm {{ $vehicle->$area ? 'bg-green-100' : 'bg-yellow-100' }}">
+            <p class="text-gray-600 text-sm">{{ $label }}</p>
+            <p class="text-gray-800 text-sm font-semibold">{{ $vehicle->$area ? 'Sí' : 'No' }}</p>
+        </div>
+    @endforeach
+</div>
+
+
 
         <!-- Observaciones solo si existen -->
         @if($vehicle->observations)

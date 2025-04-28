@@ -35,10 +35,13 @@ class VehicleController extends Controller
             }
         }
 
-        // Filtro: búsqueda por número de orden de servicio
         if ($request->has('order_number') && $request->order_number) {
-            $vehicles->where('order_number', 'like', '%' . $request->order_number . '%');
+            $vehicles->where(function($query) use ($request) {
+                $query->where('order_number', 'like', '%' . $request->order_number . '%')
+                      ->orWhere('vin', 'like', '%' . $request->order_number . '%');
+            });
         }
+        
 
         // Sin filtros: muestra todo
         if (!$request->has('recent') && !$request->has('current_month') && !$request->has('month') && !$request->has('year') && !$request->has('order_number')) {
@@ -71,6 +74,14 @@ class VehicleController extends Controller
             'plas',
             'km',
             'key',
+            // Nuevos checkboxes de áreas:
+            'diagnostic',
+            'dismantling',
+            'disassembly',
+            'assembly',
+            'mounting',
+            'testing',
+            'delivered',
         ];
 
         // Convertimos los checkboxes a true o false
@@ -86,6 +97,7 @@ class VehicleController extends Controller
             'plates' => 'required|string|max:255',
             'service_type' => 'required|string|max:255',
             'order_number' => 'required|string|max:255',
+            'vin' => 'required|string|max:255', // <--- Nuevo campo obligatorio
             'yellow_sheet' => 'nullable|boolean',
             'blue_sheet' => 'nullable|boolean',
             'history' => 'nullable|boolean',
@@ -93,6 +105,14 @@ class VehicleController extends Controller
             'plas' => 'nullable|boolean',
             'km' => 'nullable|boolean',
             'key' => 'nullable|boolean',
+            'observations' => 'nullable|string',
+            'diagnostic' => 'nullable|boolean',  // <--- Nuevos campos opcionales
+            'dismantling' => 'nullable|boolean',
+            'disassembly' => 'nullable|boolean',
+            'assembly' => 'nullable|boolean',
+            'mounting' => 'nullable|boolean',
+            'testing' => 'nullable|boolean',
+            'delivered' => 'nullable|boolean',
             'observations' => 'nullable|string',
         ], [
             // Mensajes personalizados
@@ -104,6 +124,7 @@ class VehicleController extends Controller
             'plates.required' => 'Las placas son obligatorias.',
             'service_type.required' => 'El tipo de servicio es obligatorio.',
             'order_number.required' => 'El número de orden es obligatorio.',
+            'vin.required' => 'El VIN es obligatorio.', // <--- Mensaje personalizado del VIN
             'yellow_sheet.boolean' => 'El valor de la Hoja Amarilla debe ser verdadero o falso.',
             'blue_sheet.boolean' => 'El valor de la Hoja Azul debe ser verdadero o falso.',
             'history.boolean' => 'El valor del Historial debe ser verdadero o falso.',
@@ -111,6 +132,13 @@ class VehicleController extends Controller
             'plas.boolean' => 'El valor del Plas debe ser verdadero o falso.',
             'km.boolean' => 'El valor del Km debe ser verdadero o falso.',
             'key.boolean' => 'El valor de la Llave debe ser verdadero o falso.',
+            'diagnostic.boolean' => 'El valor de Diagnóstico debe ser verdadero o falso.', // Nuevos mensajes
+            'dismantling.boolean' => 'El valor de Desmontaje debe ser verdadero o falso.',
+            'disassembly.boolean' => 'El valor de Desarmado debe ser verdadero o falso.',
+            'assembly.boolean' => 'El valor de Armado debe ser verdadero o falso.',
+            'mounting.boolean' => 'El valor de Montaje debe ser verdadero o falso.',
+            'testing.boolean' => 'El valor de Pruebas debe ser verdadero o falso.',
+            'delivered.boolean' => 'El valor de "Entregado" debe ser verdadero o falso.',
             'observations.string' => 'Las observaciones deben ser una cadena de texto.',
         ]);
 
@@ -132,7 +160,8 @@ class VehicleController extends Controller
 
     public function edit($id)
     {
-        $vehicle = Vehicle::findOrFail($id);  // Encuentra el vehículo o muestra error 404
+        $vehicle = Vehicle::findOrFail($id);
+        // Encuentra el vehículo o muestra error 404
         return view('vehicles.edit', compact('vehicle'));  // Pasamos el vehículo a la vista
     }
 
@@ -147,6 +176,14 @@ class VehicleController extends Controller
             'plas',
             'km',
             'key',
+            // Nuevos checkboxes de áreas:
+            'diagnostic',
+            'dismantling',
+            'disassembly',
+            'assembly',
+            'mounting',
+            'testing',
+            'delivered',
         ];
 
         // Convertimos los checkboxes a true o false
@@ -162,6 +199,7 @@ class VehicleController extends Controller
             'plates' => 'required|string|max:255',
             'service_type' => 'required|string|max:255',
             'order_number' => 'required|string|max:255',
+            'vin' => 'required|string|max:255', // <--- Nuevo campo obligatorio
             'yellow_sheet' => 'nullable|boolean',
             'blue_sheet' => 'nullable|boolean',
             'history' => 'nullable|boolean',
@@ -169,6 +207,14 @@ class VehicleController extends Controller
             'plas' => 'nullable|boolean',
             'km' => 'nullable|boolean',
             'key' => 'nullable|boolean',
+            'observations' => 'nullable|string',
+            'diagnostic' => 'nullable|boolean',  // <--- Nuevos campos opcionales
+            'dismantling' => 'nullable|boolean',
+            'disassembly' => 'nullable|boolean',
+            'assembly' => 'nullable|boolean',
+            'mounting' => 'nullable|boolean',
+            'testing' => 'nullable|boolean',
+            'delivered' => 'nullable|boolean',
             'observations' => 'nullable|string',
         ], [
             // Mensajes personalizados
@@ -180,6 +226,7 @@ class VehicleController extends Controller
             'plates.required' => 'Las placas son obligatorias.',
             'service_type.required' => 'El tipo de servicio es obligatorio.',
             'order_number.required' => 'El número de orden es obligatorio.',
+            'vin.required' => 'El VIN es obligatorio.', // <--- Mensaje personalizado del VIN
             'yellow_sheet.boolean' => 'El valor de la Hoja Amarilla debe ser verdadero o falso.',
             'blue_sheet.boolean' => 'El valor de la Hoja Azul debe ser verdadero o falso.',
             'history.boolean' => 'El valor del Historial debe ser verdadero o falso.',
@@ -187,9 +234,15 @@ class VehicleController extends Controller
             'plas.boolean' => 'El valor del Plas debe ser verdadero o falso.',
             'km.boolean' => 'El valor del Km debe ser verdadero o falso.',
             'key.boolean' => 'El valor de la Llave debe ser verdadero o falso.',
+            'diagnostic.boolean' => 'El valor de Diagnóstico debe ser verdadero o falso.', // Nuevos mensajes
+            'dismantling.boolean' => 'El valor de Desmontaje debe ser verdadero o falso.',
+            'disassembly.boolean' => 'El valor de Desarmado debe ser verdadero o falso.',
+            'assembly.boolean' => 'El valor de Armado debe ser verdadero o falso.',
+            'mounting.boolean' => 'El valor de Montaje debe ser verdadero o falso.',
+            'testing.boolean' => 'El valor de Pruebas debe ser verdadero o falso.',
+            'delivered.boolean' => 'El valor de "Entregado" debe ser verdadero o falso.',
             'observations.string' => 'Las observaciones deben ser una cadena de texto.',
         ]);
-
         // Encuentra el vehículo a actualizar
         $vehicle = Vehicle::findOrFail($id);
 
