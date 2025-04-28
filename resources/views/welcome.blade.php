@@ -140,7 +140,7 @@
                     </div>
 
                     <!-- Botón Ver Detalle -->
-                    <div class="flex justify-between items-center md:flex-row flex-col gap-1">
+                    <div class="flex justify-between items-center gap-1 flex-wrap">
                         <a href="{{ route('vehicles.show', $vehicle->id) }}"
                             class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
                             Ver detalles
