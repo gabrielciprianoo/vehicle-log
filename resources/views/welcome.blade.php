@@ -87,7 +87,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
 
         @foreach ($vehicles as $vehicle)
-            <div class="bg-white shadow-md hover:shadow-lg transition-shadow rounded-xl p-6 mb-6 border border-gray-200">
+            <div class="{{($vehicle->blue_sheet) ? 'bg-blue-100' : 'bg-yellow-100'}} shadow-md hover:shadow-lg transition-shadow rounded-xl p-6 mb-6 border border-gray-200">
                 <!-- Header: Vehículo + Acciones -->
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-2xl font-bold text-gray-800 capitalize">{{ $vehicle->vehicle }}</h3>
